@@ -18,7 +18,7 @@ public class PriorityQueueIterator<T> implements Iterator<PriorityQueueItem<T>>
 		// TODO
 		// This copies the contents of the passed parameter to the local object.
 		// Hint : see copy constructor in PriorityQueue
-		this.priorityQueue = new PriorityQueue(pq);
+		this.priorityQueue = new PriorityQueue<T>(pq);
 		}
 
 	/**

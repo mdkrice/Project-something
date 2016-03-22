@@ -69,29 +69,18 @@ public class PriorityQueue<E> implements QueueADT<PriorityQueueItem<E>>, Iterabl
 		}
 		//Problem is that no item is added to Queue.
 		else	{
-			boolean foundSamePriority = false;
-			int index = 1;
-//			for(PriorityQueueItem<E> node : this)	{
-//				if (node.getPriority() == item.getPriority())	{
-//					foundSamePriority = true;
-//					this.array[index].add((E)item);
-//					//node.add((E) item);
-//				}
-//				index ++;
-//			}
-			
 			for(int i = 1; i <= this.currentSize; i ++)	{
 				if(this.array[i].getPriority() == item.getPriority())	{
-					foundSamePriority = true;
-					index = 1;
-					this.array[i].add((E)item);
+					//this.array[i].add((E));
+					for(int j = item.getList().size(); j > 0; j--)	{
+						this.array[i].add(item.getList().dequeue());
+					}
+					return;
 				}
 			}
 			
-			if(!foundSamePriority)	{
-				this.array[this.currentSize + 1] = item;
-				this.perocolateUp(currentSize + 1);
-			}
+			this.array[this.currentSize + 1] = item;
+			this.perocolateUp(currentSize + 1);
 		}
 		
 		
@@ -195,42 +184,43 @@ public class PriorityQueue<E> implements QueueADT<PriorityQueueItem<E>>, Iterabl
 			return;
 		}
 
-//		while(!done)	{
-//			if (parent == 1 && leftChild > 0)	{
-//				if(this.array[parent].compareTo(this.array[1]) < 0)	{
-//					this.swap(parent, leftChild);
-//				}
-//				else if(this.array[rightChild].compareTo(this.array[2]) < 0)	{
-//					this.swap(parent, rightChild);
-//				}
-//				else	{
-//					done = true;
-//				}
-//					
-//			}
 		boolean done = false;
 		while (!done)	{
+			done = true;
 			int leftChild = this.getLeftChild(parent);
 			int rightChild = this.getRightChild(parent);
 			if(leftChild < 0 && rightChild < 0)	{
 				return;
 			}
-			
-			if (leftChild > 0)	{
-				if(this.array[parent].compareTo(this.array[leftChild]) < 0) {
-					this.swap(parent, leftChild);
-					parent = leftChild;
+
+			//if rightChild exists, so does left child
+			if (rightChild > 0)	{
+				if (this.array[rightChild].getPriority() > this.array[leftChild].getPriority())	{
+					if(this.array[parent].compareTo(this.array[rightChild]) < 0) {
+						this.swap(parent, rightChild);
+						parent = rightChild;
+						done = false;
+					}
+				}
+				
+				else	{	
+					if (this.array[parent].compareTo(this.array[leftChild]) < 0) {
+						this.swap(parent, leftChild);
+						parent = leftChild;
+						done = false;
+					}
 				}
 			}
 			
-			else if(this.array[parent].compareTo(this.array[rightChild]) < 0) {
-				this.swap(parent, rightChild);
-				parent = rightChild;
+			//must be that leftChild exists
+			else	{
+				if((this.array[parent].compareTo(this.array[leftChild]) < 0)) {
+					this.swap(parent, leftChild);
+					parent = leftChild;
+					done = false;
+				}
 			}
 			
-			else	{
-				done = true;
-			}
 		}
 	}
 	
@@ -247,22 +237,17 @@ public class PriorityQueue<E> implements QueueADT<PriorityQueueItem<E>>, Iterabl
 		if(currPos == 1)	{
 			return;
 		}
-		if(currPos == 2 || currPos == 3)	{
-			if (this.array[currPos].compareTo(this.array[1]) > 0)	{
-				this.swap(1, currPos);
-			}
-			return;
-		}
-		
-		while (this.array[currPos].compareTo(this.array[((currPos - 2) / 2)]) > 0)	{
-			PriorityQueueItem<E> tmp = this.array[currPos];
-			this.array[currPos] = this.array[((currPos - 2) / 2)];
-			this.array[((currPos - 2) / 2)] = tmp;
+		//System.out.println(currPos + "" + currPos / 2);
+		while(this.array[currPos].compareTo(this.array[currPos/2]) > 0 && currPos != 0)	{
+			this.swap(currPos/2, currPos);
+			currPos = currPos / 2;
+			//System.out.println("Swappy Dap");
+			if(currPos == 1) return;
 		}
 	}
 	
 	private int getRightChild(int parentPos)	{
-		int rightChild = (parentPos * 2) - 1;
+		int rightChild = (parentPos * 2) + 1;
 		if(this.array.length <= rightChild)	{
 			return -1;
 		}

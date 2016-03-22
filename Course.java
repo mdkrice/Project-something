@@ -28,6 +28,11 @@ public class Course
 	public Course(String classCode, String name, int maxCapacity)
 		{
 		// TODO initialize all parameters
+		this.courseCode = classCode;
+		this.name = name;
+		this.maxCapacity = maxCapacity;
+		this.registrationQueue = new PriorityQueue<Student>();
+		this.courseRoster = new ArrayList<Student>();
 		}
 
 	/**
@@ -42,7 +47,9 @@ public class Course
 	public void addStudent(Student student, int coins)
 		{
 		// This method is called from Studentcenter.java
-
+		PriorityQueueItem<Student> newStudent = new PriorityQueueItem<Student>(coins);
+		newStudent.add(student);
+		this.registrationQueue.enqueue(newStudent);
 		// Enqueue a newly created PQItem.
 		// Checking if a PriorityQueueItem with the same priority already exists
 		// is done in the enqueue method.
@@ -59,24 +66,29 @@ public class Course
 		{
 		// TODO : populate courseRoster from registrationQueue
 		// Use the PriorityQueueIterator for this task.
+		for(PriorityQueueItem<Student> item : this.registrationQueue)	{
+			while (!item.getList().isEmpty() && this.courseRoster.size() < this.maxCapacity)	{
+				this.courseRoster.add(item.getList().dequeue());
+			}
+		}
 
 		}
 
 	public String getCourseName()
 		{
 		// TODO
-		return null;
+		return this.name;
 		}
 
 	public String getCourseCode()
 		{
 		// TODO
-		return null;
+		return this.courseCode;
 		}
 
 	public List<Student> getCourseRegister()
 		{
 		// TODO
-		return null;
+		return this.courseRoster;
 		}
 	}

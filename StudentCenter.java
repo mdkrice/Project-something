@@ -47,21 +47,75 @@ public class StudentCenter
 	 * @return true on success, false on failure.
 	 * 
 	 */
-	public static boolean readData(String fileName)
-		{
-		try
-			{
+	public static boolean readData(String fileName) {
+		try	{
 			// TODO parse the input file as described in the P3 specification.
 			// make sure to call course.addStudent() appropriately.
+			File inputFile = new File(fileName);
+			Scanner scan = new Scanner(inputFile);
+			int pointsPerStudent = 0;
+			String nextLine = scan.nextLine();
+//			while(pointsPerStudent == 0)	{
+//				nextLine = scan.nextLine();
+//				if(nextLine.contains("#"))	{
+//					pointsPerStudent = new Integer(scan.next().trim());
+//				}
+//			}
+			
+			pointsPerStudent = scan.nextInt();
+			
+			while(!nextLine.contains("#Courses"))	{
+				nextLine = scan.nextLine();
 			}
-		catch(Exception e)
-			{
+			
+			nextLine = scan.nextLine();
+			while(!nextLine.contains("#Student"))	{
+				String[] courseInfo = nextLine.split(" ");
+				courseList.add(new Course(courseInfo[0].trim(), courseInfo[1].trim(), 
+						new Integer(courseInfo[2].trim())));
+				nextLine = scan.nextLine();
+			}
+			
+			//nextLine = scan.nextLine();
+			
+			while(scan.hasNext())	{
+				StudentCenter.createStudent(scan, pointsPerStudent);
+			}
+		}
+		catch(Exception e)	{
 			e.printStackTrace();
 			System.out.println("File Parse Error");
 			return false;
-			}
-		return true;
 		}
+		return true;
+	}
+	
+	private static void createStudent(Scanner scan, int pointsPerStudent)	{
+		String name = scan.nextLine().trim();
+		if(name.equals(""))	{
+			name = scan.nextLine().trim();
+		}
+		String id = scan.nextLine().trim();
+		String nextLine = "";
+		Student studentToAdd = new Student(name, id, pointsPerStudent);
+		StudentCenter.studentList.add(studentToAdd);
+		while(scan.hasNext())	{
+			String courseID = scan.next().trim();
+			if(courseID.contains("#"))	{
+				return;
+			}
+			int coinsForClass = new Integer(scan.next().trim());
+			scan.nextLine();
+			Course courseToAddTo = StudentCenter.getCourseFromCourseList(courseID);
+			if(studentToAdd.getPoints() >= coinsForClass)	{
+				courseToAddTo.addStudent(studentToAdd, coinsForClass);
+				studentToAdd.deductCoins(coinsForClass);
+			}
+			//nextLine = scan.nextLine();
+			
+		}
+		
+	}
 
 	/**
 	 * 
